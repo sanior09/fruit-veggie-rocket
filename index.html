@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>จรวดยิงผักผลไม้ 🚀🍎</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Mali:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Real-Time HUD -->
+    <header class="hud" aria-label="ข้อมูลเกม">
+      <div class="hud-group hud-stats">
+        <div class="hud-pill hud-score" id="scorePill">
+          <span class="hud-icon" aria-hidden="true">⭐</span>
+          <div class="hud-metric">
+            <span class="hud-label">คะแนน</span>
+            <span class="hud-value" id="scoreValue">0</span>
+          </div>
+        </div>
+
+        <div class="hud-pill hud-timer" id="timerPill">
+          <span class="hud-icon" aria-hidden="true">⏱️</span>
+          <div class="hud-metric">
+            <span class="hud-label">เวลา</span>
+            <span class="hud-value"><span id="timerValue">60</span> <small>วิ</small></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud-group hud-actions">
+        <button
+          type="button"
+          class="btn-pill btn-toggle"
+          id="autoFireBtn"
+          aria-pressed="false"
+          title="สลับโหมดยิงอัตโนมัติ"
+        >
+          <span aria-hidden="true">🔥</span>
+          <span class="btn-text">ยิงอัตโนมัติ: ปิด</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn-pill btn-toggle"
+          id="soundBtn"
+          aria-pressed="true"
+          title="เปิด/ปิดเสียงเอฟเฟกต์"
+        >
+          <span id="soundIcon" aria-hidden="true">🔊</span>
+          <span class="btn-text sr-mobile">เสียง</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn-pill btn-restart-hud hidden"
+          id="hudRestartBtn"
+          title="เริ่มเกมใหม่"
+        >
+          <span aria-hidden="true">🔄</span>
+          <span class="btn-text">เล่นใหม่</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Interactive Game Stage -->
+    <main class="stage-wrap">
+      <canvas id="gameCanvas" aria-label="สนามเกมจรวดยิงผักผลไม้"></canvas>
+
+      <!-- Start Screen Overlay -->
+      <section class="overlay" id="startOverlay" aria-labelledby="gameTitle">
+        <div class="modal-card start-card">
+          <div class="title-badge">🚀 เกมอวกาศแสนสนุก</div>
+          <h1 id="gameTitle" class="game-title">จรวดยิงผักผลไม้</h1>
+          <p class="subtitle">
+            บังคับจรวดด้านล่างแล้วยิงผักผลไม้ให้ได้คะแนนเยอะที่สุดภายใน 60 วินาที!
+          </p>
+
+          <div class="legend-grid">
+            <div class="legend-box legend-good">
+              <div class="legend-header">
+                <span class="badge-plus">+10 คะแนน</span>
+                <span>ยิงผักและผลไม้!</span>
+              </div>
+              <div class="legend-items" id="goodLegend">
+                <div class="legend-item">
+                  <canvas class="legend-canvas" data-item="apple" width="56" height="56"></canvas>
+                  <span>แอปเปิล</span>
+                </div>
+                <div class="legend-item">
+                  <canvas class="legend-canvas" data-item="banana" width="56" height="56"></canvas>
+                  <span>กล้วย</span>
+                </div>
+                <div class="legend-item">
+                  <canvas class="legend-canvas" data-item="carrot" width="56" height="56"></canvas>
+                  <span>แครอท</span>
+                </div>
+                <div class="legend-item">
+                  <canvas class="legend-canvas" data-item="watermelon" width="56" height="56"></canvas>
+                  <span>แตงโม</span>
+                </div>
+                <div class="legend-item">
+                  <canvas class="legend-canvas" data-item="orange" width="56" height="56"></canvas>
+                  <span>ส้ม</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="legend-box legend-bad">
+              <div class="legend-header">
+                <span class="badge-minus">-10 คะแนน</span>
+                <span>ระวัง! อย่ายิงโดน</span>
+              </div>
+              <div class="legend-items" id="badLegend">
+                <div class="legend-item">
+                  <canvas class="legend-canvas" data-item="cake" width="56" height="56"></canvas>
+                  <span>เค้ก</span>
+                </div>
+                <div class="legend-item">
+                  <canvas class="legend-canvas" data-item="hamburger" width="56" height="56"></canvas>
+                  <span>แฮมเบอร์เกอร์</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls-hint">
+            <span>🖱️ คอมพิวเตอร์: เลื่อนเมาส์เพื่อขยับจรวด &bull; คลิกหรือกด Space เพื่อยิง</span>
+            <span>📱 แตะหน้าจอ: ลากนิ้วเพื่อเลื่อน &bull; แตะหรือกดค้างเพื่อยิง</span>
+          </div>
+
+          <button type="button" class="btn-cta btn-start" id="startBtn">
+            <span>🚀 เริ่มเกมเลย!</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Game Over Overlay -->
+      <section class="overlay hidden" id="gameOverOverlay" aria-labelledby="gameOverTitle">
+        <div class="modal-card gameover-card">
+          <div class="stars-row" id="starsRow" aria-label="ระดับดาว">⭐⭐⭐</div>
+          <h2 id="gameOverTitle" class="gameover-title">หมดเวลาแล้ว! 🎉</h2>
+          <p class="gameover-rank" id="rankMessage">สุดยอดนักยิงผักผลไม้!</p>
+
+          <div class="final-score-box">
+            <span class="final-score-label">คะแนนรวมของคุณ</span>
+            <span class="final-score-num" id="finalScore">0</span>
+            <span class="best-score-tag" id="bestScoreTag">สถิติสูงสุด: 0</span>
+          </div>
+
+          <div class="stats-summary">
+            <div class="stat-chip stat-good">
+              <span class="stat-num" id="fruitsHitCount">0</span>
+              <span class="stat-lbl">ผักผลไม้ที่ยิงได้</span>
+            </div>
+            <div class="stat-chip stat-bad">
+              <span class="stat-num" id="junkHitCount">0</span>
+              <span class="stat-lbl">ขนมที่เผลอยิง</span>
+            </div>
+          </div>
+
+          <button type="button" class="btn-cta btn-restart" id="restartBtn">
+            <span>🔄 เล่นใหม่อีกครั้ง</span>
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script defer src="src/audio.js"></script>
+  <script defer src="src/sprites.js"></script>
+  <script defer src="src/game.js"></script>
+</body>
+</html>
